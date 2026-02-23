@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- CSS only -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous" />
+  <!-- JavaScript Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+    crossorigin="anonymous"></script>
+  <style>
+    #navbarRight {
+      margin-left: auto;
+      padding-right: 10px;
+    }
+
+    .navbar-brand {
+      padding-left: 15px;
+    }
+
+    .row {
+      width: 90%;
+    }
+  </style>
+  <title>DR Predcition</title>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/" style="color:aliceblue">Diabetic Retinopathy Classification</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/index" style="color: aliceblue;">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/predict" style="color: aliceblue;">Prediction</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout" style="color: aliceblue;">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <br>
+  
+  {% if show_result %}
+  <!-- Show prediction results -->
+  <div class="container">
+    <h2 class="text-center mb-4">Prediction Results</h2>
+    <div class="row">
+      <div class="col-md-6">
+        <h4>Uploaded Image</h4>
+        <img src="{{ url_for('static', filename='../uploads/' + image_filename) }}" class="img-fluid rounded" alt="Uploaded Image" style="max-width: 100%; height: auto;">
+      </div>
+      <div class="col-md-6">
+        <h4>Diagnosis</h4>
+        <div class="alert alert-info">
+          <h3>{{ prediction.replace('_', ' ') }}</h3>
+          <p><strong>Confidence:</strong> {{ confidence }}%</p>
+        </div>
+        <div class="alert alert-warning">
+          <h5>Recommendation:</h5>
+          {% if prediction == 'No_DR' %}
+          <p>No signs of diabetic retinopathy detected. Continue regular monitoring.</p>
+          {% elif prediction == 'Mild' %}
+          <p>Mild diabetic retinopathy detected. Schedule a follow-up with your eye care specialist.</p>
+          {% elif prediction == 'Moderate' %}
+          <p>Moderate diabetic retinopathy detected. Consult with an ophthalmologist soon.</p>
+          {% elif prediction == 'Severe' %}
+          <p>Severe diabetic retinopathy detected. Immediate consultation with an eye specialist is recommended.</p>
+          {% elif prediction == 'Proliferate_DR' %}
+          <p>Proliferative diabetic retinopathy detected. Urgent medical attention required.</p>
+          {% endif %}
+        </div>
+        <div class="text-center mt-3">
+          <a href="/predict" class="btn btn-primary btn-lg">Predict Another Image</a>
+          <a href="/index" class="btn btn-secondary btn-lg">Go to Home</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <!-- Show upload form -->
+  <div class="container justify-content-center" style="max-width:700px">
+    <form action="/predict" method="POST" enctype="multipart/form-data">
+      <label for="formFileLg" class="form-label">Upload Fundus Image</label>
+      <input class="form-control form-control-lg" name="file" type="file" accept="image/*" required />
+      <br>
+      <button class="btn btn-lg btn-dark" type="submit">Predict</button>
+    </form>
+  </div>
+  {% endif %}
+  
+  <br><br>
+  <div class="d-flex justify-content-center">
+    <img src="{{ url_for('static', filename='level.png') }}" style="width: 90%; max-width: 800px" alt="DR Levels">
+  </div>
+</body>
+</html>
